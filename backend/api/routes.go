@@ -145,25 +145,46 @@ func (s *ServerState) addCampaign(c *gin.Context) {
 }
 
 func (s *ServerState) getCampaigns(c *gin.Context) {
-	var cmpg []Campaign
-	if err := s.DB.Select(&cmpg, "select * from campaign"); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": err})
-	}
+	query := `
+select 
+	u.name, 
+	u.username, 
+	u.email, 
+	u.phone, 
+	u.country, 
+	ut.name as "userType", 
+	ut.description, 
+	co.name as "courseName", 
+	co.description as "courseDescr", 
+	co.cost, 
+	co.length, 
+	co.requirements, 
+	co.email as "courseEmail", 
+	sc.name as "schoolName"
+from ht.campaign ca, ht.course co, ht.school sc, ht.user u, ht.usertype ut
+where ca.course_id = co.id AND co.school_id = sc.id AND ca.user_id = u.id AND ut.id = u.usertype_id;`
+	var campaigns []Campaign
 
-	c.JSON(http.StatusOK, gin.H{"user": cmpg})
+	err := s.DB.Select(&campaigns, query)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(campaigns)
+
+	c.JSON(http.StatusOK, gin.H{"status": campaigns})
 }
 
 func (s *ServerState) getCampaign(c *gin.Context) {
-	var cmpgn Campaign
-	if err := c.ShouldBindUri(&cmpgn); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": err})
-	}
-
-	if err := s.DB.Select(&cmpgn, "select "+string(cmpgn.Id)+" from campaign"); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": err})
-	}
-
-	c.JSON(http.StatusOK, gin.H{"campaign": cmpgn})
+	//var cmpgn Campaign
+	//if err := c.ShouldBindUri(&cmpgn); err != nil {
+	//	c.JSON(http.StatusBadRequest, gin.H{"status": err})
+	//}
+	//
+	//if err := s.DB.Select(&cmpgn, "select "+string(cmpgn.Id)+" from campaign"); err != nil {
+	//	c.JSON(http.StatusBadRequest, gin.H{"status": err})
+	//}
+	//
+	//c.JSON(http.StatusOK, gin.H{"campaign": cmpgn})
 }
 
 func (s *ServerState) updateCampaign(c *gin.Context) {

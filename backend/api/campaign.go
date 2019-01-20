@@ -1,8 +1,20 @@
 package api
 
 type Campaign struct {
-	Id            int    `db:"id"`
-	TotalReceived string `db:"total_received"`
-	UserId        string `db:"user_id"`
-	CourseId      string `db:"course_id"`
+	// u.name, u.username , u.email, u.phone, u.country, ut.name as "userType", ut.description, co.name as "courseName",
+	// co.description as "courseDescr", co.cost, co.length, co.requirements, co.email as "courseEmail", sc.name as "schoolName"
+	Name string
+	Username string
+	Email string
+	Phone string
+	Country string
+	UserType string
+	Description string
+	CourseName string
+	CourseDescription string
+	Cost float32
+	Length int
+	Requirements string
+	CourseEmail string
+	SchoolName string
 }
