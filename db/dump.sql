@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `campaign`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `campaign` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `total_received` varchar(45) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   `course_id` int(11) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE `campaign` (
   KEY `fk_campaign_course1` (`course_id`),
   CONSTRAINT `fk_campaign_course1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
   CONSTRAINT `fk_campaign_user1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,8 +91,8 @@ CREATE TABLE `post` (
   `total_campaign_snapshot` int(11) DEFAULT NULL,
   `campaign_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_post_campaign1` (`campaign_id`),
-  CONSTRAINT `fk_post_campaign1` FOREIGN KEY (`campaign_id`) REFERENCES `campaign` (`id`)
+  KEY `fk_post_campaign_12` (`campaign_id`),
+  CONSTRAINT `fk_post_campaign_12` FOREIGN KEY (`campaign_id`) REFERENCES `campaign` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -148,8 +148,7 @@ CREATE TABLE `user` (
   `country` varchar(100) DEFAULT NULL,
   `usertype_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_user_usertype1` (`usertype_id`),
-  CONSTRAINT `fk_user_usertype1` FOREIGN KEY (`usertype_id`) REFERENCES `usertype` (`id`)
+  KEY `fk_user_usertype1` (`usertype_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -197,4 +196,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-20 15:04:52
+-- Dump completed on 2019-01-20 16:34:47
