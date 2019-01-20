@@ -1,16 +1,21 @@
 package main
 
 import (
-	"fmt"
-
 	"NP2OP/backend/api"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
+const (
+	user          = "root"
+	password      = "root"
+	db            = "ht"
+	connectString = user + ":" + password + "@/" + db
+)
+
 func main() {
-	fmt.Println("we in bois")
-	db := sqlx.MustConnect("mysql", "user=root dbname=ht password=root sslmode=disable")
+	db := sqlx.MustConnect("mysql", connectString)
 
 	server := api.ServerState{
 		DB: db,
