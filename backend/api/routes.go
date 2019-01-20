@@ -57,7 +57,7 @@ func (s *ServerState) addPost(c *gin.Context) {
 		if post.Description == "" || len(post.Description) < 100 {
 			c.JSON(400, gin.H{"status": "Post.Description cannot be less than 100 characters"})
 		}
-		if post.Goal == 0 || post.Goal < 0 {
+		if post.Cost == 0 || post.Cost < 0 {
 			c.JSON(400, gin.H{"status": "post.Goal is less than 0 or a negative amount"})
 		}
 	} else {
@@ -78,8 +78,21 @@ func (s *ServerState) addPost(c *gin.Context) {
 
 //Placeholder function demonstrating the gin grouping
 func (s *ServerState) getPosts(c *gin.Context) {
+	query := `select u.name, u.username , p.description, p.timestamp, p.total_campaign_snapshot, co.name, co.cost, sc.name
+	from ht.post p, ht.campaign ca, ht.course co, ht.school sc, ht.user u
+	where p.campaign_id = ca.id AND ca.course_id = co.id AND co.school_id = sc.id AND ca.user_id = u.id;`
 
-	c.JSON(http.StatusOK, gin.H{"status": "success"})
+	//curl --header "Content-Type: application/json" --request GET http://localhost:8080/posts/
+
+	var posts []Post
+
+	err := s.DB.Select(&posts, query)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(posts)
+
+	c.JSON(http.StatusOK, gin.H{"status": posts})
 }
 
 //Placeholder function demonstrating the gin grouping
@@ -112,7 +125,7 @@ func (s *ServerState) getUsers(c *gin.Context) {
 
 func (s *ServerState) getUser(c *gin.Context) {
 	var u User
-	if err := c.ShouldBindUri(&u); err != nil {
+	if err := c.ShouldBind(&u); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": err})
 	}
 
