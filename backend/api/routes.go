@@ -36,8 +36,8 @@ func (s *ServerState) NewRouter() *gin.Engine {
 		Campaigns.GET("/", s.getCampaigns)
 		Campaigns.GET("/:id", s.getCampaign)
 		Campaigns.PUT("/:id", s.updateCampaign)
-		Campaigns.GET("/funding", s.getCampaignFunding)
-		Campaigns.GET("/approve", s.approveCampaign)
+		Campaigns.PUT("/:id/funding", s.getCampaignFunding)
+		Campaigns.PUT("/:id/approve", s.approveCampaign)
 	}
 
 	return r
