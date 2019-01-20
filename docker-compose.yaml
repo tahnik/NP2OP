@@ -20,7 +20,7 @@ services:
       - ./db/dump.sql:/docker-entrypoint-initdb.d/dump.sql    
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: samplevideo_db
+      MYSQL_DATABASE: ht
     ports:
       - "3306:3306"
 volumes:
