@@ -14,14 +14,9 @@ services:
     depends_on:
       - db
   db:
-    image: mariadb:10.3
-    volumes:
-      - container-volume:/var/lib/mysql
-      - ./db/dump.sql:/docker-entrypoint-initdb.d/dump.sql    
+    build: './db/'  
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ht
     ports:
       - "3306:3306"
-volumes:
-  container-volume:
