@@ -40,7 +40,7 @@
             <v-list-tile
               v-for="(child, i) in item.children"
               :key="i"
-              @click=""
+              @click="goTo(child)"
             >
               <v-list-tile-action v-if="child.icon">
                 <v-icon>{{ child.icon }}</v-icon>
@@ -52,7 +52,7 @@
               </v-list-tile-content>
             </v-list-tile>
           </v-list-group>
-          <v-list-tile v-else @click="" :key="item.text">
+          <v-list-tile v-else @click="goTo(item)" :key="item.text">
             <v-list-tile-action>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-tile-action>
@@ -79,7 +79,7 @@
           @click.stop="drawer = !drawer"
           v-if="$vuetify.breakpoint.mdAndDown"
         ></v-toolbar-side-icon>
-        <span class="hidden-sm-and-down">NP2OP</span>
+        <span style="cursor: pointer" @click="$router.push('/')">NP2OP</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-layout justify-end style="height: 100%" v-if="$vuetify.breakpoint.mdAndUp">
@@ -115,8 +115,7 @@ export default {
       drawer: null,
       activeItem: null,
       items: [
-        { text: 'Register', icon: 'mdi-account-plus', route: '/register' },
-        { text: 'Sign In', icon: 'mdi-login', route: '/sign-in' }
+        { text: 'Account', icon: 'mdi-account-plus', route: '/account' },
       ]
     }
   },

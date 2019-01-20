@@ -1,10 +1,10 @@
 import VueRouter from 'vue-router';
-import SignIn from './components/sign_in.vue';
-import Register from './components/register.vue';
+import Account from './components/account.vue';
+import Campaigns from './components/campaigns.vue';
 
 const routes = [
-  { path: '/sign-in', component: SignIn },
-  { path: '/register', component: Register }
+  { path: '/account', component: Account },
+  { path: '/campaigns', component: Campaigns }
 ]
 
 const router = new VueRouter({
