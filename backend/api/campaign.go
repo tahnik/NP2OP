@@ -18,3 +18,10 @@ type Campaign struct {
 	CourseEmail       string `db:"courseEmail"`
 	SchoolName        string `db:"schoolName"`
 }
+
+type InsertCampaign struct {
+	Title       string
+	Description string
+	UserID      int
+	CourseID    int
+}

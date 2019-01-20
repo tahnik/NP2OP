@@ -141,7 +141,41 @@ func (s *ServerState) addUser(c *gin.Context) {
 }
 
 func (s *ServerState) addCampaign(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": "success"})
+	var ins InsertCampaign
+	query := `INSERT INTO campaign (title, description, total_received, user_id, course_id) VALUES (?, ?, ?, ?, ?);`
+
+	/* MODIFY DATA DUE TO KEY CONSTRAINTS
+
+	curl --header "Content-Type: application/json" --request POST --data \
+	    '{"title":"This is my Title", "description":"DESCRIPTION GOES HERE","userid": 5, "courseid": 3}' \
+	     http://localhost:8080/campaigns/
+	*/
+	if err := c.ShouldBind(&ins); err == nil {
+		//Validate
+		if ins.UserID == 0 {
+			c.JSON(400, gin.H{"status": "ins.ID cannot be zero"})
+		}
+		if ins.Description == "" {
+			c.JSON(400, gin.H{"status": "ins.Description cannot be blank"})
+		}
+		if ins.CourseID == 0 {
+			c.JSON(400, gin.H{"status": "ins.Description cannot be zero"})
+		}
+		if ins.Title == "" {
+			c.JSON(400, gin.H{"status": "ins.Title is blank"})
+		}
+	} else {
+		c.JSON(400, gin.H{"status": fmt.Sprintf("Failed to bind campaing.insert, error: %s", err.Error())})
+	}
+
+	res := s.DB.MustExec(query, ins.Title, ins.Description, 0, ins.UserID, ins.CourseID)
+	id, err := res.LastInsertId()
+	if err != nil {
+		c.JSON(500, gin.H{"status": "Failure returning last inserted ID"})
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": fmt.Sprintf("Campaign inserted successfully, ID is %d", id)})
 }
 
 func (s *ServerState) getCampaigns(c *gin.Context) {
