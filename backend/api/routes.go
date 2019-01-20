@@ -69,7 +69,9 @@ func (s *ServerState) addPost(c *gin.Context) {
 
 //Placeholder function demonstrating the gin grouping
 func (s *ServerState) getPosts(c *gin.Context) {
-
+	query := `select u.name, u.username , p.description, p.timestamp, p.total_campaign_snapshot, co.name, co.cost, sc.name
+	from ht.post p, ht.campaign ca, ht.course co, ht.school sc, ht.user u
+	where p.campaign_id = ca.id AND ca.course_id = co.id AND co.school_id = sc.id AND ca.user_id = u.id;`
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
@@ -101,7 +103,7 @@ func (s *ServerState) getUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": u})
 }
 
-func (s *ServerState) getUser(c *gin.Context)  {
+func (s *ServerState) getUser(c *gin.Context) {
 	var u User
 	if err := c.ShouldBindUri(&u); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": err})
