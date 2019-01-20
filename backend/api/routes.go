@@ -171,7 +171,7 @@ where ca.course_id = co.id AND co.school_id = sc.id AND ca.user_id = u.id AND ut
 	}
 	fmt.Println(campaigns)
 
-	c.JSON(http.StatusOK, gin.H{"status": campaigns})
+	c.JSON(http.StatusOK, campaigns)
 }
 
 func (s *ServerState) getCampaign(c *gin.Context) {
