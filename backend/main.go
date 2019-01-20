@@ -2,19 +2,22 @@ package main
 
 import (
 	"NP2OP/backend/api"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
 const (
-	user          = "root"
-	password      = "root"
-	db            = "ht"
-	connectString = user + ":" + password + "@/" + db
+	server   = "db"
+	port     = "3306"
+	user     = "root"
+	password = "root"
+	db       = "ht"
 )
 
 func main() {
+	connectString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, server, port, db)
 	db := sqlx.MustConnect("mysql", connectString)
 
 	server := api.ServerState{
