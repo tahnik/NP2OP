@@ -24,7 +24,7 @@ var (
 )
 
 func main() {
-	db := sqlx.MustConnect("mysql", testDB)
+	db := sqlx.MustConnect("mysql", prodDB)
 
 	server := api.ServerState{
 		DB: db,
