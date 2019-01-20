@@ -25,3 +25,8 @@ type InsertCampaign struct {
 	UserID      int
 	CourseID    int
 }
+
+type AddFund struct {
+	ID     int
+	Amount int
+}

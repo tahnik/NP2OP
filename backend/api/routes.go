@@ -36,7 +36,7 @@ func (s *ServerState) NewRouter() *gin.Engine {
 		Campaigns.GET("/", s.getCampaigns)
 		Campaigns.GET("/:id", s.getCampaign)
 		Campaigns.PUT("/:id", s.updateCampaign)
-		Campaigns.PUT("/:id/funding", s.getCampaignFunding)
+		Campaigns.PUT("/:id/funding", s.updateCampaignFunding)
 		Campaigns.PUT("/:id/approve", s.approveCampaign)
 	}
 
@@ -225,7 +225,33 @@ func (s *ServerState) updateCampaign(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
-func (s *ServerState) getCampaignFunding(c *gin.Context) {
+func (s *ServerState) updateCampaignFunding(c *gin.Context) {
+	var add AddFund
+
+	/*
+		curl --header "Content-Type: application/json" --request PUT --data \
+		    '{"amount": 100, "id": 4}' \
+		     http://localhost:8080/campaigns/5/funding
+	*/
+
+	if err := c.ShouldBind(&add); err == nil {
+		//Validate
+		if add.ID == 0 {
+			c.JSON(400, gin.H{"status": "add.ID cannot be zero"})
+		}
+		if add.Amount == 0 || add.Amount < 0 {
+			c.JSON(400, gin.H{"status": "add.amount cannot be zero or less than zero"})
+		}
+	} else {
+		c.JSON(400, gin.H{"status": fmt.Sprintf("Failed to bind updateCampaign.add, error: %s", err.Error())})
+	}
+
+	query := `UPDATE campaign SET total_received = total_received + ? WHERE id = ?`
+	_, err := s.DB.Exec(query, add.Amount, add.ID)
+	if err != nil {
+		c.JSON(500, gin.H{"status": fmt.Sprintf("Failed to bind updateCampaignFunding, error: %s", err.Error())})
+	}
+
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
