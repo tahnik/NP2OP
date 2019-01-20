@@ -24,7 +24,10 @@ DROP TABLE IF EXISTS `campaign`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `campaign` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `total_received` varchar(45) DEFAULT NULL,
+  `title` varchar(100) DEFAULT NULL,
+  `description` varchar(1000) DEFAULT NULL,
+  `total_received` int(11) DEFAULT NULL,
+  `verified` int(11) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   `course_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
@@ -41,7 +44,7 @@ CREATE TABLE `campaign` (
 
 LOCK TABLES `campaign` WRITE;
 /*!40000 ALTER TABLE `campaign` DISABLE KEYS */;
-INSERT INTO `campaign` VALUES (1,'300',1,1),(2,'4500',2,2),(3,'5980',3,3),(4,'49000',4,4),(5,'0',5,1);
+INSERT INTO `campaign` VALUES (1,'Sam\'s funding','Hi, my name is Sam and I\'ve just joined Visa because I\'m very passionate about payments and I would like to start this course to learn even more about payments.',300,NULL,1,1),(2,'Mikey\'s funding','Hi, my name is Mikey and in recent years I ot passionate about computer science and its modern applications.',4500,NULL,2,2),(3,'Peter\'s campaign','Hi, my name is Peter and I would love to learn more about machine learning and blockchain, this course will help me achieve these goals. ',5980,NULL,3,3),(4,'Jame\'s campaign','Hi, my name James and I would love to study in the US to study computer science.',49000,NULL,4,4),(5,'Tahnik\'s campaign','Hi, my name is Tahnik and I would like to learn more about payments and the Visa business in general.',0,NULL,5,1);
 /*!40000 ALTER TABLE `campaign` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,10 +63,10 @@ CREATE TABLE `course` (
   `length` varchar(45) DEFAULT NULL,
   `requirements` varchar(500) DEFAULT NULL,
   `email` varchar(45) DEFAULT NULL,
-  `school_id` int(11) NOT NULL,
+  `organisation_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_course_school1` (`school_id`),
-  CONSTRAINT `fk_course_school1` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`)
+  KEY `fk_course_school1` (`organisation_id`),
+  CONSTRAINT `fk_course_school1` FOREIGN KEY (`organisation_id`) REFERENCES `organisation` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -75,6 +78,31 @@ LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
 INSERT INTO `course` VALUES (1,'Payments Everywhere','Course to understand more the visa business',500,'5 months','Being a Visa employee','paymentseverywhere@visa.com',1),(2,'Computer Science','Learn about computer science and application of technology in the modern world',27000,'3 years','ABB A-Levels','uor_admissions@reading.ac.uk',2),(3,'Computer Science','Learn about computer science and application of technology in the modern world',27000,'3 years','AAA A-Levels','ucl_admissions@ucl.ac.uk',3),(4,'History','Learn about past, present and future of human history and how it affected, affects and will affect society',50000,'5 years','AAA A-Levels','harvard_admissions@harvard.com',4);
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `organisation`
+--
+
+DROP TABLE IF EXISTS `organisation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `organisation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  `description` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `organisation`
+--
+
+LOCK TABLES `organisation` WRITE;
+/*!40000 ALTER TABLE `organisation` DISABLE KEYS */;
+INSERT INTO `organisation` VALUES (1,'Visa University','Visa Corporate university'),(2,'UoR','Reading town university'),(3,'UCL','University of central london'),(4,'Harvard','Harvard University');
+/*!40000 ALTER TABLE `organisation` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -104,31 +132,6 @@ LOCK TABLES `post` WRITE;
 /*!40000 ALTER TABLE `post` DISABLE KEYS */;
 INSERT INTO `post` VALUES (1,'2019-01-05 14:12:32','Hi, my name is Sam and I\'ve just joined Visa because I\'m very passionate about payments and I would like to start this course to learn even more about payments.',0,1),(2,'2018-10-05 19:12:32','Hi, my name is Mikey and in recent years I ot passionate about computer science and its modern applications.',0,2),(3,'2018-11-05 19:12:32','Hi, my name is Peter and I would love to learn more about machine learning and blockchain, this course will help me achieve these goals. ',0,3),(4,'2018-11-05 19:12:32','Hi, my name James and I would love to study in the US to study computer science.',0,4),(5,'2018-11-05 19:12:32','Hi, my name is Tahnik and I would like to learn more about payments and the Visa business in general.',0,5);
 /*!40000 ALTER TABLE `post` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `school`
---
-
-DROP TABLE IF EXISTS `school`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `school` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  `description` varchar(500) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `school`
---
-
-LOCK TABLES `school` WRITE;
-/*!40000 ALTER TABLE `school` DISABLE KEYS */;
-INSERT INTO `school` VALUES (1,'Visa University','Visa Corporate university'),(2,'UoR','Reading town university'),(3,'UCL','University of central london'),(4,'Harvard','Harvard University');
-/*!40000 ALTER TABLE `school` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -196,4 +199,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-20 16:34:47
+-- Dump completed on 2019-01-20 19:03:37
