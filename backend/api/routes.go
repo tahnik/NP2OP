@@ -79,8 +79,8 @@ func (s *ServerState) addPost(c *gin.Context) {
 //Placeholder function demonstrating the gin grouping
 func (s *ServerState) getPosts(c *gin.Context) {
 	query := `select u.name, u.username , p.description, p.timestamp, p.total_campaign_snapshot, co.name, co.cost, sc.name
-	from ht.post p, ht.campaign ca, ht.course co, ht.school sc, ht.user u
-	where p.campaign_id = ca.id AND ca.course_id = co.id AND co.school_id = sc.id AND ca.user_id = u.id;`
+	from ht.post p, ht.campaign ca, ht.course co, ht.organisation sc, ht.user u
+	where p.campaign_id = ca.id AND ca.course_id = co.id AND co.organisation_id = sc.id AND ca.user_id = u.id;`
 
 	//curl --header "Content-Type: application/json" --request GET http://localhost:8080/posts/
 
@@ -137,6 +137,15 @@ func (s *ServerState) getUser(c *gin.Context) {
 }
 
 func (s *ServerState) addUser(c *gin.Context) {
+	var u User
+	c.ShouldBind(&u)
+	q := `INSERT INTO 'user' (password', 'name', 'email', 'phone', 'accountType', 'country', 'username')
+	VALUES ("", ?, ?, ?, ?, ?, "")`
+	_, err := s.DB.Exec(q, u.Name, u.Email, u.Phone, u.UserTypeId, u.Country)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
@@ -148,6 +157,7 @@ func (s *ServerState) getCampaigns(c *gin.Context) {
 	query := `
 select 
 	u.name, 
+	ca.title,
 	u.username, 
 	u.email, 
 	u.phone, 
@@ -161,8 +171,8 @@ select
 	co.requirements, 
 	co.email as "courseEmail", 
 	sc.name as "schoolName"
-from ht.campaign ca, ht.course co, ht.school sc, ht.user u, ht.usertype ut
-where ca.course_id = co.id AND co.school_id = sc.id AND ca.user_id = u.id AND ut.id = u.usertype_id;`
+from ht.campaign ca, ht.course co, ht.organisation sc, ht.user u, ht.usertype ut
+where ca.course_id = co.id AND co.organisation_id = sc.id AND ca.user_id = u.id AND ut.id = u.usertype_id;`
 	var campaigns []Campaign
 
 	err := s.DB.Select(&campaigns, query)
