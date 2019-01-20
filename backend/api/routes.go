@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -136,14 +137,25 @@ func (s *ServerState) getUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": u})
 }
 
+// curl --request POST --data '{"name":"james","email":"j@j.com", "Phone":"07875","usertype_id":0, "country":"UK"}' "http://localhost:8080/user/"
 func (s *ServerState) addUser(c *gin.Context) {
 	var u User
-	c.ShouldBind(&u)
-	q := `INSERT INTO 'user' (password', 'name', 'email', 'phone', 'accountType', 'country', 'username')
-	VALUES ("", ?, ?, ?, ?, ?, "")`
-	_, err := s.DB.Exec(q, u.Name, u.Email, u.Phone, u.UserTypeId, u.Country)
+
+	err := c.BindJSON(&u)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Printf("Value: %v", u)
+	phoneInt, err := strconv.Atoi(u.Phone)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	q := "INSERT INTO `user` (`password`, `name`, `email`, `phone`, `usertype_id`, `country`, `username`) VALUES ('', ?, ?, ?, ?, ?, '')"
+	_, err = s.DB.Exec(q, u.Name, u.Email, phoneInt, u.UserTypeId, u.Country)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
