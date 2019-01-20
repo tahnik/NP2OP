@@ -73,6 +73,8 @@ func (s *ServerState) getPosts(c *gin.Context) {
 	from ht.post p, ht.campaign ca, ht.course co, ht.school sc, ht.user u
 	where p.campaign_id = ca.id AND ca.course_id = co.id AND co.school_id = sc.id AND ca.user_id = u.id;`
 
+	//curl --header "Content-Type: application/json" --request GET http://localhost:8080/posts/
+
 	var posts []Post
 
 	err := s.DB.Select(&posts, query)
