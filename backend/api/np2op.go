@@ -14,10 +14,10 @@ type (
 
 	//Post is an instance of a user's Post
 	Post struct {
-		ID          int    `json:"id"`
-		Username    string `json:"username"`
-		Created     string `json:"created"`
-		Description string `json:"description"`
+		ID          int    `db:"id"`
+		Created     string `db:"timestamp"`
+		Description string `db:"description"`
 		Goal        int    `json:"goal"`
+		CampaignID  int    `db:"campaignid"`
 	}
 )
