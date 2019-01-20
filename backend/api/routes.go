@@ -23,12 +23,21 @@ func (s *ServerState) NewRouter() *gin.Engine {
 
 	Posts := r.Group("/posts/")
 	{
-		//placeholder handler functions demonstrating the grouping of the API
-		Posts.POST("/", s.addPost) //localhost:8080
+		Posts.POST("/", s.addPost)
 		Posts.GET("/", s.getPosts)
-		Posts.GET("/:id", s.getPost) //localhost:8080/user/sdakjfbdshfbsdihvb
+		Posts.GET("/:id", s.getPost)
 		Posts.PUT("/:id", s.updatePost)
 		Posts.DELETE("/:id", s.deletePost)
+	}
+
+	Campaigns := r.Group("/campaigns")
+	{
+		Campaigns.POST("/", s.addCampaign)
+		Campaigns.GET("/", s.getCampaigns)
+		Campaigns.GET("/:id", s.getCampaign)
+		Campaigns.PUT("/:id", s.updateCampaign)
+		Campaigns.GET("/funding", s.getCampaignFunding)
+		Campaigns.GET("/approve", s.approveCampaign)
 	}
 
 	return r
@@ -101,7 +110,7 @@ func (s *ServerState) getUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": u})
 }
 
-func (s *ServerState) getUser(c *gin.Context)  {
+func (s *ServerState) getUser(c *gin.Context) {
 	var u User
 	if err := c.ShouldBindUri(&u); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": err})
@@ -115,5 +124,43 @@ func (s *ServerState) getUser(c *gin.Context)  {
 }
 
 func (s *ServerState) addUser(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
+}
+
+func (s *ServerState) addCampaign(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
+}
+
+func (s *ServerState) getCampaigns(c *gin.Context) {
+	var cmpg []Campaign
+	if err := s.DB.Select(&cmpg, "select * from campaign"); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": err})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": cmpg})
+}
+
+func (s *ServerState) getCampaign(c *gin.Context) {
+	var cmpgn Campaign
+	if err := c.ShouldBindUri(&cmpgn); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": err})
+	}
+
+	if err := s.DB.Select(&cmpgn, "select "+string(cmpgn.Id)+" from campaign"); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": err})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"campaign": cmpgn})
+}
+
+func (s *ServerState) updateCampaign(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
+}
+
+func (s *ServerState) getCampaignFunding(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
+}
+
+func (s *ServerState) approveCampaign(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
