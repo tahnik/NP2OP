@@ -24,6 +24,10 @@ export default {
 
 <style lang="scss">
 
+.theme--light.application {
+  background: linear-gradient(45deg,#0c4da9,#2894d2 45%);
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
