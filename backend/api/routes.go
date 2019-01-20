@@ -20,6 +20,16 @@ func (s *ServerState) NewRouter() *gin.Engine {
 		Users.DELETE("/:id", s.placeholder)
 	}
 
+	Posts := r.Group("/posts/")
+	{
+		//placeholder handler functions demonstrating the grouping of the API
+		Posts.POST("/", s.addUser) //localhost:8080
+		Posts.GET("/", s.placeholder)
+		Posts.GET("/:id", s.placeholder) //localhost:8080/user/sdakjfbdshfbsdihvb
+		Posts.PUT("/:id", s.placeholder)
+		Posts.DELETE("/:id", s.placeholder)
+	}
+
 	return r
 }
 
