@@ -124,7 +124,7 @@ func (s *ServerState) getUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": u})
 }
 
-//
+//curl --request GET "http://localhost:8080/user/visa@visa.com"
 func (s *ServerState) getUser(c *gin.Context) {
 	var u []User
 	q := fmt.Sprintf("SELECT * FROM user WHERE email='%s'", c.Param("email"))
