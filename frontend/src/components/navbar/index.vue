@@ -116,6 +116,7 @@ export default {
       activeItem: null,
       items: [
         { text: 'Account', icon: 'mdi-account-plus', route: '/account' },
+        { text: 'Campaigns', icon: 'mdi-view-list', route: '/campaigns' },
       ]
     }
   },

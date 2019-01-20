@@ -35,7 +35,7 @@ CREATE TABLE `campaign` (
   KEY `fk_campaign_course1` (`course_id`),
   CONSTRAINT `fk_campaign_course1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
   CONSTRAINT `fk_campaign_user1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,7 +44,7 @@ CREATE TABLE `campaign` (
 
 LOCK TABLES `campaign` WRITE;
 /*!40000 ALTER TABLE `campaign` DISABLE KEYS */;
-INSERT INTO `campaign` VALUES (1,'Sam\'s funding','Hi, my name is Sam and I\'ve just joined Visa because I\'m very passionate about payments and I would like to start this course to learn even more about payments.',300,NULL,1,1),(2,'Mikey\'s funding','Hi, my name is Mikey and in recent years I ot passionate about computer science and its modern applications.',4500,NULL,2,2),(3,'Peter\'s campaign','Hi, my name is Peter and I would love to learn more about machine learning and blockchain, this course will help me achieve these goals. ',5980,NULL,3,3),(4,'Jame\'s campaign','Hi, my name James and I would love to study in the US to study computer science.',49000,NULL,4,4),(5,'Tahnik\'s campaign','Hi, my name is Tahnik and I would like to learn more about payments and the Visa business in general.',0,NULL,5,1);
+INSERT INTO `campaign` VALUES (1,'Sam\'s funding','Hi, my name is Sam and I\'ve just joined Visa because I\'m very passionate about payments and I would like to start this course to learn even more about payments.',300,1,1,1),(2,'Mikey\'s funding','Hi, my name is Mikey and in recent years I ot passionate about computer science and its modern applications.',4500,1,2,2),(3,'Peter\'s campaign','Hi, my name is Peter and I would love to learn more about machine learning and blockchain, this course will help me achieve these goals. ',5980,1,3,3),(4,'Jame\'s campaign','Hi, my name James and I would love to study in the US to study computer science.',49000,1,4,4),(5,'Tahnik\'s campaign','Hi, my name is Tahnik and I would like to learn more about payments and the Visa business in general.',0,0,5,1);
 /*!40000 ALTER TABLE `campaign` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -199,4 +199,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-20 19:03:37
+-- Dump completed on 2019-01-20 21:19:07

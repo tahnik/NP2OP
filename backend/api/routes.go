@@ -37,7 +37,7 @@ func (s *ServerState) NewRouter() *gin.Engine {
 		Campaigns.GET("/", s.getCampaigns)
 		Campaigns.GET("/:id", s.getCampaign)
 		Campaigns.PUT("/:id", s.updateCampaign)
-		Campaigns.PUT("/:id/funding", s.getCampaignFunding)
+		Campaigns.PUT("/:id/funding", s.updateCampaignFunding)
 		Campaigns.PUT("/:id/approve", s.approveCampaign)
 	}
 
@@ -51,15 +51,19 @@ func (s *ServerState) addPost(c *gin.Context) {
 		//Validate
 		if post.ID == 0 {
 			c.JSON(400, gin.H{"status": "Post.ID cannot be zero"})
+			return
 		}
 		if post.Description == "" {
 			c.JSON(400, gin.H{"status": "Post.Description cannot be blank"})
+			return
 		}
 		if post.Description == "" || len(post.Description) < 100 {
 			c.JSON(400, gin.H{"status": "Post.Description cannot be less than 100 characters"})
+			return
 		}
 		if post.Cost == 0 || post.Cost < 0 {
 			c.JSON(400, gin.H{"status": "post.Goal is less than 0 or a negative amount"})
+			return
 		}
 	} else {
 		c.JSON(400, gin.H{"status": fmt.Sprintf("Failed to bind post, error: %s", err.Error())})
@@ -71,7 +75,7 @@ func (s *ServerState) addPost(c *gin.Context) {
 	id, err := res.LastInsertId()
 	if err != nil {
 		c.JSON(500, gin.H{"status": "Failure returning last inserted ID"})
-		panic(err)
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": fmt.Sprintf("User inserted successfully, ID is %d", id)})
@@ -89,7 +93,8 @@ func (s *ServerState) getPosts(c *gin.Context) {
 
 	err := s.DB.Select(&posts, query)
 	if err != nil {
-		panic(err)
+		c.JSON(500, gin.H{"status": err})
+		return
 	}
 	fmt.Println(posts)
 
@@ -119,6 +124,7 @@ func (s *ServerState) getUsers(c *gin.Context) {
 	var u []User
 	if err := s.DB.Select(&u, "select * from users"); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": err})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"user": u})
@@ -149,7 +155,6 @@ func (s *ServerState) addUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Printf("Value: %v", u)
 	phoneInt, err := strconv.Atoi(u.Phone)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -165,7 +170,46 @@ func (s *ServerState) addUser(c *gin.Context) {
 }
 
 func (s *ServerState) addCampaign(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": "success"})
+	var ins InsertCampaign
+	query := `INSERT INTO campaign (title, description, total_received, user_id, course_id) VALUES (?, ?, ?, ?, ?);`
+
+	/* MODIFY DATA DUE TO KEY CONSTRAINTS
+
+	curl --header "Content-Type: application/json" --request POST --data \
+	    '{"title":"This is my Title", "description":"DESCRIPTION GOES HERE","userid": 5, "courseid": 3}' \
+	     http://localhost:8080/campaigns/
+	*/
+	if err := c.ShouldBind(&ins); err == nil {
+		//Validate
+		if ins.UserID == 0 {
+			c.JSON(400, gin.H{"status": "ins.ID cannot be zero"})
+			return
+		}
+		if ins.Description == "" {
+			c.JSON(400, gin.H{"status": "ins.Description cannot be blank"})
+			return
+		}
+		if ins.CourseID == 0 {
+			c.JSON(400, gin.H{"status": "ins.Description cannot be zero"})
+			return
+		}
+		if ins.Title == "" {
+			c.JSON(400, gin.H{"status": "ins.Title is blank"})
+			return
+		}
+	} else {
+		c.JSON(400, gin.H{"status": fmt.Sprintf("Failed to bind campaing.insert, error: %s", err.Error())})
+		return
+	}
+
+	res := s.DB.MustExec(query, ins.Title, ins.Description, 0, ins.UserID, ins.CourseID)
+	id, err := res.LastInsertId()
+	if err != nil {
+		c.JSON(500, gin.H{"status": "Failure returning last inserted ID"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": fmt.Sprintf("Campaign inserted successfully, ID is %d", id)})
 }
 
 func (s *ServerState) getCampaigns(c *gin.Context) {
@@ -200,23 +244,80 @@ where ca.course_id = co.id AND co.organisation_id = sc.id AND ca.user_id = u.id 
 }
 
 func (s *ServerState) getCampaign(c *gin.Context) {
-	//var cmpgn Campaign
-	//if err := c.ShouldBindUri(&cmpgn); err != nil {
-	//	c.JSON(http.StatusBadRequest, gin.H{"status": err})
-	//}
-	//
-	//if err := s.DB.Select(&cmpgn, "select "+string(cmpgn.Id)+" from campaign"); err != nil {
-	//	c.JSON(http.StatusBadRequest, gin.H{"status": err})
-	//}
-	//
-	//c.JSON(http.StatusOK, gin.H{"campaign": cmpgn})
+	query := `
+	select u.name,
+        u.username ,
+        u.email,
+        u.phone,
+        u.country,
+        ut.name as "userType",
+        ut.description as "userTypeDescription",
+        ca.title as "campaignTitle",
+        ca.description as "campaignDescription",
+        ca.verified, co.name as "courseName",
+        co.description as "courseDescr",
+        co.cost, co.length,
+        co.requirements,
+        co.email as "courseEmail",
+        org.name as "organisationName"
+from ht.campaign ca, ht.course co, ht.organisation org, ht.user u, ht.usertype ut
+where ca.id = ? AND ca.course_id = co.id AND co.organisation_id = org.id AND ca.user_id = u.id AND ut.id = u.usertype_id`
+	var camp IndividualCampaign
+	str := c.Param("id")
+
+	id, err := strconv.Atoi(str)
+
+	camp.CampaignID = id
+	//Validate
+	if camp.CampaignID == 0 {
+		c.JSON(400, gin.H{"status": "ins.ID cannot be zero"})
+		return
+	}
+
+	err = s.DB.Get(&camp, query, camp.CampaignID)
+	if err != nil {
+		c.JSON(500, gin.H{"status": fmt.Sprintf("Failed to get getCampaign, error: %s", err.Error())})
+		return
+	}
+
+	c.JSON(http.StatusOK, camp)
 }
 
 func (s *ServerState) updateCampaign(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
-func (s *ServerState) getCampaignFunding(c *gin.Context) {
+func (s *ServerState) updateCampaignFunding(c *gin.Context) {
+	var add AddFund
+
+	/*
+		curl --header "Content-Type: application/json" --request PUT --data \
+		    '{"amount": 100, "id": 4}' \
+		     http://localhost:8080/campaigns/5/funding
+	*/
+
+	if err := c.ShouldBind(&add); err == nil {
+		//Validate
+		if add.ID == 0 {
+			c.JSON(400, gin.H{"status": "add.ID cannot be zero"})
+			return
+		}
+		if add.Amount == 0 || add.Amount < 0 {
+			c.JSON(400, gin.H{"status": "add.amount cannot be zero or less than zero"})
+			return
+		}
+	} else {
+		c.JSON(400, gin.H{"status": fmt.Sprintf("Failed to bind updateCampaign.add, error: %s", err.Error())})
+		return
+	}
+
+	query := `UPDATE campaign SET total_received = total_received + ? WHERE id = ?`
+	_, err := s.DB.Exec(query, add.Amount, add.ID)
+	if err != nil {
+		c.JSON(500, gin.H{"status": fmt.Sprintf("Failed to bind updateCampaignFunding, error: %s", err.Error())})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
