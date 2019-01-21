@@ -7,14 +7,15 @@
         class="pa-2">
         <v-card class="mb-3">
           <v-card-title primary-title>
-            <div class="mb-2">
+            <v-layout class="mb-2" column>
               <label>
                 Posted by {{ campaign.Name }}
               </label>
-            </div>
-            <label class="title font-weight-medium">
-              {{ campaign.Title }}
-            </label>
+              <div class="mb-2"></div>
+              <label class="title font-weight-medium">
+                {{ campaign.Title }}
+              </label>
+            </v-layout>
           </v-card-title>
           <img :src="campaign.Image" style="width: 100%" />
           <v-card-text>
