@@ -16,7 +16,7 @@
               {{ campaign.Title }}
             </label>
           </v-card-title>
-          <img src="../assets/campaign.jpg" style="width: 100%" />
+          <img :src="campaign.Image" style="width: 100%" />
           <v-card-text>
             <p style="text-align: justify; margin-bottom: 0">
               {{ `${campaign.Description.substring(0,150)}...` }}
@@ -78,7 +78,7 @@
                   <div class="mt-2"></div>
                   <label>Posted By {{ campaign.Name }}</label>
                 </v-layout>
-                <img src="../assets/campaign.jpg" style="width: 100%" class="mb-3" />
+                <img :src="campaign.Image" style="width: 100%" class="mb-3" />
                 <label>{{ campaign.Description }}</label>
               </v-layout>
             </v-flex>
@@ -87,7 +87,7 @@
               <v-layout class="pa-3" column>
                 <v-layout class="mb-3 mt-1">
                   <label class="headline font-weight-regular">
-                    Course Details
+                    {{ campaign.UserType === 'individual' ? 'Course' : 'Organisation' }} Details
                   </label>
                 </v-layout>
                 <v-layout column>
@@ -268,9 +268,10 @@ export default {
       this.donateCampaign = campaign;
       this.donateD = true;
     },
-    donate() {
+    donate(index) {
       this.donateLoading = true;
       this.donateDone = false;
+
 
       setTimeout(() => {
         this.donateDone = true;
@@ -280,6 +281,12 @@ export default {
         this.donateLoading = false;
         this.donateD = false;
         this.donateCampaign = null;
+        this.donateLongNumber = null;
+        this.donateAmount = 0;
+        this.$store.commit('addFunding', {
+          email: this.donateCampaign.Email,
+          amount: this.donateAmount,
+        })
       }, 6000);
     }
   }
