@@ -3,6 +3,7 @@ import Account from './components/account.vue';
 import Campaigns from './components/campaigns.vue';
 
 const routes = [
+  { path: '/', redirect: '/campaigns' },
   { path: '/account', component: Account },
   { path: '/campaigns', component: Campaigns }
 ]

@@ -79,7 +79,7 @@
           @click.stop="drawer = !drawer"
           v-if="$vuetify.breakpoint.mdAndDown"
         ></v-toolbar-side-icon>
-        <span style="cursor: pointer" @click="$router.push('/')">NP2OP</span>
+        <span style="cursor: pointer" @click="$router.push('/')">EduFund</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-layout justify-end style="height: 100%" v-if="$vuetify.breakpoint.mdAndUp">
