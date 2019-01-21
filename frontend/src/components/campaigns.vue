@@ -278,15 +278,15 @@ export default {
       }, 3000);
 
       setTimeout(() => {
+        this.$store.commit('addFunding', {
+          email: this.donateCampaign.Email,
+          amount: this.donateAmount,
+        })
         this.donateLoading = false;
         this.donateD = false;
         this.donateCampaign = null;
         this.donateLongNumber = null;
         this.donateAmount = 0;
-        this.$store.commit('addFunding', {
-          email: this.donateCampaign.Email,
-          amount: this.donateAmount,
-        })
       }, 6000);
     }
   }
