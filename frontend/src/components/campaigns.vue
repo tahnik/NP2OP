@@ -112,7 +112,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="#1a1f71" flat @click="dialog = false">Close</v-btn>
-          <v-btn color="#1a1f71" flat @click="dialog = false">
+          <v-btn color="#1a1f71" flat @click="donateToCampaign(campaign)">
             Donate
           </v-btn>
         </v-card-actions>
@@ -120,25 +120,27 @@
     </v-dialog>
     <v-dialog v-model="donateD" persistent max-width="500">
       <v-card v-if="donateCampaign">
-        <v-layout class="payLoad" justify-center align-center v-if="donateLoading">
-          <v-layout
-            v-if="!donateDone"
-            column justify-center align-center
-          >
-            <v-progress-circular
-              :size="50"
-              color="#1a1f71"
-              indeterminate
-            ></v-progress-circular>
-            <div class="mt-5"></div>
-            <label class="title font-weight-light">Processing donation</label>
+        <transition name="payfade">
+          <v-layout class="payLoad" justify-center align-center v-if="donateLoading">
+            <v-layout
+              v-if="!donateDone"
+              column justify-center align-center
+            >
+              <v-progress-circular
+                :size="50"
+                color="#1a1f71"
+                indeterminate
+              ></v-progress-circular>
+              <div class="mt-5"></div>
+              <label class="title font-weight-light">Processing donation</label>
+            </v-layout>
+            <v-layout v-else column justify-center align-center>
+              <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
+              <div class="mt-2"></div>
+              <label class="title font-weight-light">Donation Complete! Thank you</label>
+            </v-layout>
           </v-layout>
-          <v-layout v-else column justify-center align-center>
-            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
-            <div class="mt-2"></div>
-            <label class="title font-weight-light">Donate Complete! Thank you</label>
-          </v-layout>
-        </v-layout>
+        </transition>
         <v-layout class="pa-3">
           <label class="headline font-weight-light">
             Donate to {{ donateCampaign.Name }}
@@ -261,6 +263,8 @@ export default {
       this.dialog = true;
     },
     donateToCampaign(campaign) {
+      this.dialog = false;
+      this.campaign = null;
       this.donateCampaign = campaign;
       this.donateD = true;
     },
@@ -301,6 +305,13 @@ export default {
   transform: translateY(10%)
 }
 
+.payfade-enter-active, .payfade-leave-active {
+  transition: all .9s;
+}
+.payfade-enter, .payfade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
 .payLoad {
   position: absolute;
   top: 0;
@@ -329,7 +340,7 @@ export default {
   stroke-width: 2;
   stroke: #fff;
   stroke-miterlimit: 10;
-  margin: 10% auto;
+  margin: 5% auto;
   box-shadow: inset 0px 0px 0px #1a1f71;
   animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
 }
