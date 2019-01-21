@@ -244,24 +244,15 @@ where ca.course_id = co.id AND co.organisation_id = sc.id AND ca.user_id = u.id 
 }
 
 func (s *ServerState) getCampaign(c *gin.Context) {
-	query := `
-	select u.name,
-        u.username ,
-        u.email,
-        u.phone,
-        u.country,
-        ut.name as "userType",
-        ut.description as "userTypeDescription",
-        ca.title as "campaignTitle",
-        ca.description as "campaignDescription",
-        ca.verified, co.name as "courseName",
-        co.description as "courseDescr",
-        co.cost, co.length,
-        co.requirements,
-        co.email as "courseEmail",
-        org.name as "organisationName"
-from ht.campaign ca, ht.course co, ht.organisation org, ht.user u, ht.usertype ut
-where ca.id = ? AND ca.course_id = co.id AND co.organisation_id = org.id AND ca.user_id = u.id AND ut.id = u.usertype_id`
+	q := fmt.Sprintf("select %s %s %s from %s where %s",
+		"u.name,u.username, u.email,u.phone,u.country,ut.name as `userType`,ut.description as `userTypeDescription`,",
+		"ca.title as `campaignTitle`, ca.description as `campaignDescription`, ca.verified, co.name as `courseName`,co.description as `courseDescr`,",
+		"co.cost, co.length, co.requirements, co.email as `courseEmail`, org.name as `organisationName`",
+		"ht.campaign ca, ht.course co, ht.organisation org, ht.user u, ht.usertype ut",
+		"ca.id = ? AND ca.course_id = co.id AND co.organisation_id = org.id AND ca.user_id = u.id AND ut.id = u.usertype_id",
+	)
+	fmt.Println(q)
+
 	var camp IndividualCampaign
 	str := c.Param("id")
 
@@ -274,7 +265,7 @@ where ca.id = ? AND ca.course_id = co.id AND co.organisation_id = org.id AND ca.
 		return
 	}
 
-	err = s.DB.Get(&camp, query, camp.CampaignID)
+	err = s.DB.Get(&camp, q, string(id))
 	if err != nil {
 		c.JSON(500, gin.H{"status": fmt.Sprintf("Failed to get getCampaign, error: %s", err.Error())})
 		return
