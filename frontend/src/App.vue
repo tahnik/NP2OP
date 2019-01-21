@@ -28,8 +28,12 @@ export default {
   background: linear-gradient(45deg,#0c4da9,#2894d2 45%);
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Titillium Web', sans-serif;
+}
+
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
